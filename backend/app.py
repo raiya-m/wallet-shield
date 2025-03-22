@@ -4,7 +4,6 @@ import logging
 import json
 import numpy as np
 from sklearn.ensemble import IsolationForest
-
 app = Flask(__name__)
 CORS(app)
 @app.route('/ai_analysis', methods=['POST'])
