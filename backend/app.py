@@ -7,13 +7,16 @@ from sklearn.ensemble import IsolationForest
 import os
 import requests
 from dotenv import load_dotenv
-load_dotenv()
-
+load_dotenv()  
 ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY")
 
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY is not set. Please check your .env file.")
+
+print(f"Loaded GEMINI_API_KEY: {GEMINI_API_KEY}")
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -85,22 +88,33 @@ def detect_anomalies(values, field_name):
 def gemini_suggest():
     data = request.get_json()
     prompt = data.get("prompt", "")
-
     if not prompt:
         return jsonify({"response": "No prompt provided."}), 400
-
     try:
+        logging.debug(f"Sending prompt to Gemini: {prompt}")
         res = requests.post(
-            GEMINI_URL,
+            GEMINI_URL, 
             headers={"Content-Type": "application/json"},
-            json={"contents": [{"parts": [{"text": prompt}]}]}
+            json={
+                "contents": [{"parts": [{"text": prompt}]}]
+            },
         )
         res.raise_for_status()
-        reply = res.json()["candidates"][0]["content"]["parts"][0]["text"]
+        gemini_response = res.json()
+        candidates = gemini_response.get("candidates", [])
+        if candidates:
+            reply = candidates[0]["content"]["parts"][0]["text"]
+        else:
+            reply = "No response from Gemini."
+
         return jsonify({"response": reply})
-    except Exception as e:
-        print("Error contacting Gemini:", e)
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error contacting Gemini: {e}")
         return jsonify({"response": "Error contacting Gemini."}), 500
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        return jsonify({"response": "Unexpected error occurred."}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)

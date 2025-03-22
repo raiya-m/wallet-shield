@@ -6,30 +6,32 @@ const CryptoChatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [chatResponse, setChatResponse] = useState('');
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = "http://127.0.0.1:5000"; 
 
-  const handleSubmit = async () => {
-    if (!input.trim()) return;
-    const userMessage = { text: input, sender: 'user' };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setLoading(true);
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const res = await fetch(`${backendUrl}/gemini_suggest`, {
+      const response = await fetch(`${backendUrl}/gemini_suggest`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: input }),
       });
-      const data = await res.json();
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setChatResponse(data.response);
       const botMessage = {
         text: data.response || 'Sorry, Gemini did not return an answer.',
         sender: 'bot',
       };
       setMessages((prev) => [...prev, botMessage]);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Error:', error);
       setMessages((prev) => [...prev, { text: 'Error contacting Gemini.', sender: 'bot' }]);
     } finally {
       setLoading(false);
@@ -45,6 +47,7 @@ const CryptoChatbot = () => {
 
       {expanded && (
         <div className="chatbot-body">
+          {chatResponse && <div className="chat-response">{chatResponse}</div>}
           {messages.map((msg, i) => (
             <div key={i} className={`chat-message ${msg.sender}`}>
               {msg.text}
