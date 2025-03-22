@@ -6,6 +6,9 @@ import numpy as np
 from sklearn.ensemble import IsolationForest
 app = Flask(__name__)
 CORS(app)
+
+
+
 @app.route('/ai_analysis', methods=['POST'])
 def ai_analysis():
     try:
@@ -63,8 +66,6 @@ def ai_analysis():
 def detect_anomalies(values, field_name):
     logging.debug(f"Detecting anomalies for {field_name}")
     anomalies = []  
-
-
     if len(values) > 1:
         try:
             model = IsolationForest(contamination=0.2, random_state=42)  
@@ -72,8 +73,6 @@ def detect_anomalies(values, field_name):
             model.fit(reshaped_values)
             predictions = model.predict(reshaped_values)
             logging.debug(f"Predictions for {field_name}: {predictions}")
-
-
             for i, pred in enumerate(predictions):
                 if pred == -1:  
                     anomalies.append({
@@ -83,15 +82,17 @@ def detect_anomalies(values, field_name):
         except Exception as e:
             logging.error(f"An error occurred during anomaly detection for {field_name}: {str(e)}")
     else:
-        logging.debug(f"Insufficient data for anomaly detection in {field_name}.")
-   
+        logging.debug(f"Insufficient data for anomaly detection in {field_name}.")  
     logging.debug(f"Flagged anomalies for {field_name}: {anomalies}")
     return anomalies
 
 
 
 
+
 @app.route('/upload', methods=['GET', 'POST'])
+
+
 def upload_file():
     logging.debug("Upload endpoint triggered.")
     if request.method == 'GET':

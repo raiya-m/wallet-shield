@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@800&family=Bebas+Neue&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Merriweather:wght@600&family=Playfair+Display:wght@600&family=Raleway:wght@600&family=Inter:wght@600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Merriweather:wght@600&family=Playfair+Display:wght@600&family=Raleway:wght@600&family=Inter:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
 body { 
     font-family: 'Poppins', sans-serif; 
@@ -189,6 +190,7 @@ button:hover {
     transform: translateY(-240px); 
 
 }
+
 .article-caption {
     font-family: 'Varela Round', sans-serif;
     color: white; 
@@ -266,4 +268,78 @@ button:hover {
     font-size: 0.9rem;
     color: #888;
     margin-top: 20px;
+}
+
+
+
+
+
+
+.ai-analysis {
+    color: #58525c; 
+    font-family: 'Montserrat', sans-serif; 
+    padding: 20px; 
+    background-color: #ffffff; 
+    border-radius: 8px; 
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(108, 92, 231, 0.2); 
+}
+.ai-analysis h1 {
+    font-family: 'Montserrat', sans-serif;
+    color: #6c5ce7; 
+    font-size: 3rem; 
+    font-weight: 600;
+    text-align: center; 
+    margin-bottom: 20px;
+}
+
+.ai-analysis h2 {
+    font-family: 'Montserrat', sans-serif;
+    color: #6c5ce7; 
+    font-size: 2rem;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.ai-analysis p {
+    color: #ffffff;
+    background-color: #6c5ce7; 
+    font-size: 1.2rem; 
+    line-height: 1.6; 
+    padding: 10px; 
+    border: 2px solid #dfe6fd; 
+    border-radius: 8px; 
+    text-align: left; 
+    margin-bottom: 15px; 
+}
+
+.ai-analysis table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.ai-analysis table th, 
+.ai-analysis table td {
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.ai-analysis table th {
+    background-color: #dfe6fd;
+    color: #6c5ce7;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+}
+
+.ai-analysis table tr:nth-child(even) {
+    background-color: #f7f5ff;
+}
+
+.ai-analysis table tr:hover {
+    background-color: #eae8ff; 
 }
