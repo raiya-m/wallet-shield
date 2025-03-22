@@ -10,37 +10,30 @@ import requests
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 logging.basicConfig(level=logging.DEBUG)
-
 
 @app.route('/ai_analysis', methods=['POST'])
 def ai_analysis():
     try:
-        logging.debug("AI Analysis endpoint triggered.")
         if 'file' not in request.files:
-            logging.debug("No file found in request.")
             return jsonify({"error": "No file provided"}), 400
 
         file = request.files['file']
-        logging.debug(f"File received: {file.filename}")
 
         if file.filename.split('.')[-1].lower() != 'json':
-            logging.debug("Invalid file type.")
             return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
 
         try:
             data = json.load(file)
-            logging.debug("JSON parsed successfully.")
         except json.JSONDecodeError:
-            logging.debug("Failed to parse JSON.")
             return jsonify({"error": "Invalid JSON format."}), 400
 
         transactions = data.get("transactions", [])
         if not transactions:
-            logging.debug("No transactions found.")
             return jsonify({"error": "No transactions found in the file."}), 400
 
         gas_fees = [txn.get("gas_fee", 0) for txn in transactions]
@@ -58,9 +51,7 @@ def ai_analysis():
         logging.error(f"AI analysis error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-
 def detect_anomalies(values, field_name):
-    logging.debug(f"Detecting anomalies for {field_name}")
     anomalies = []
     if len(values) > 1:
         try:
@@ -78,66 +69,26 @@ def detect_anomalies(values, field_name):
             logging.error(f"Anomaly detection error for {field_name}: {str(e)}")
     return anomalies
 
-
-@app.route('/gemini_suggest', methods=['POST'])
+@app.route("/gemini_suggest", methods=["POST"])
 def gemini_suggest():
+    data = request.get_json()
+    prompt = data.get("prompt", "")
+
+    if not prompt:
+        return jsonify({"response": "No prompt provided."}), 400
+
     try:
-        data = request.get_json()
-        prompt = data.get("prompt", "")
-        logging.debug(f"Gemini prompt received: {prompt}")
-
-        if not prompt:
-            return jsonify({"error": "No prompt provided"}), 400
-
-        if not GEMINI_API_KEY:
-            return jsonify({"error": "Gemini API key not set"}), 500
-
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-        headers = { "Content-Type": "application/json" }
-        payload = {
-            "contents": [{
-                "parts": [{ "text": prompt }]
-            }]
-        }
-
-        res = requests.post(url, headers=headers, json=payload)
+        res = requests.post(
+            GEMINI_URL,
+            headers={"Content-Type": "application/json"},
+            json={"contents": [{"parts": [{"text": prompt}]}]}
+        )
         res.raise_for_status()
-        response_data = res.json()
-        response_text = response_data["candidates"][0]["content"]["parts"][0]["text"]
-
-        return jsonify({ "response": response_text })
-
+        reply = res.json()["candidates"][0]["content"]["parts"][0]["text"]
+        return jsonify({"response": reply})
     except Exception as e:
-        logging.error(f"Gemini suggestion error: {str(e)}")
-        return jsonify({"error": "Error contacting Gemini."}), 500
+        print("Error contacting Gemini:", e)
+        return jsonify({"response": "Error contacting Gemini."}), 500
 
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    logging.debug("Upload endpoint triggered.")
-    if request.method == 'GET':
-        return jsonify({"message": "Use POST to upload a file."}), 200
-
-    try:
-        if 'file' not in request.files:
-            return jsonify({"error": "No file provided"}), 400
-
-        file = request.files['file']
-        if file.filename.split('.')[-1].lower() != 'json':
-            return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
-
-        data = json.load(file)
-        logging.debug(f"Uploaded JSON: {data}")
-
-        return jsonify({
-            "message": "File processed successfully.",
-            "received_data": data
-        }), 200
-
-    except Exception as e:
-        logging.error(f"Upload error: {str(e)}")
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
