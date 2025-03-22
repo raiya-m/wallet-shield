@@ -3,17 +3,19 @@ from flask_cors import CORS
 import json
 import logging
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    force=True  # so flask doesn't override logging config
+)
+
+logger = logging.getLogger(__name__)
+
 
 import numpy as np
 from sklearn.ensemble import IsolationForest
 app = Flask(__name__)
 CORS(app)  
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s [%(levelname)s] %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.route('/ai_analysis', methods=['POST'])
 def ai_analysis():
@@ -64,7 +66,7 @@ def detect_anomalies(values, field_name):
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    print("Received a request on /upload!")
+    logger.info("Received a request on /upload!")
     if request.method == 'GET':
         return jsonify({"message": "This endpoint is for file uploads via POST requests only."}), 200
 
@@ -76,7 +78,7 @@ def upload_file():
             file = request.files['file']
             
             if file.filename.split('.')[-1].lower() != 'json':
-                print("invalid")
+                logger.info("invalid")
                 return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
 
             try:
@@ -84,7 +86,7 @@ def upload_file():
             except json.JSONDecodeError:
                 return jsonify({"error": "Failed to parse JSON. Ensure the file contains valid JSON data."}), 400
 
-            print("Uploaded JSON data:", data)
+            logger.info("Uploaded JSON data:", data)
 
             return jsonify({
                 
