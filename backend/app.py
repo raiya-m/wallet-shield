@@ -1,13 +1,11 @@
 from flask import Flask, request, jsonify, redirect, url_for
 from flask_cors import CORS
 import json
-
-
 import numpy as np
 from sklearn.ensemble import IsolationForest
 app = Flask(__name__)
 CORS(app)  
-
+#test commit because issues
 
 def detect_anomalies(values, field_name):
     anomolies = []
