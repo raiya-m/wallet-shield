@@ -4,6 +4,13 @@ import logging
 import json
 import numpy as np
 from sklearn.ensemble import IsolationForest
+
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 app = Flask(__name__)
 CORS(app)
 @app.route('/ai_analysis', methods=['POST'])
