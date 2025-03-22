@@ -59,3 +59,38 @@ def ai_analysis():
 
 
 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    print("Received a request on /upload!")
+    if request.method == 'GET':
+        return jsonify({"message": "This endpoint is for file uploads via POST requests only."}), 200
+
+    if request.method == 'POST':
+        try:
+            if 'file' not in request.files:
+                return jsonify({"error": "No file provided"}), 400
+
+            file = request.files['file']
+            
+            if file.filename.split('.')[-1].lower() != 'json':
+                print("invalid")
+                return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
+
+            try:
+                data = json.load(file)  
+            except json.JSONDecodeError:
+                return jsonify({"error": "Failed to parse JSON. Ensure the file contains valid JSON data."}), 400
+
+            print("Uploaded JSON data:", data)
+
+            return jsonify({
+                
+                "message": "File processed successfully!",
+                "received_data": data
+            }), 200
+
+        except Exception as e:
+            return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
