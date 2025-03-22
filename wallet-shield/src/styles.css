@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Varela+Round&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@800&family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Merriweather:wght@600&family=Playfair+Display:wght@600&family=Raleway:wght@600&family=Inter:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Merriweather:wght@600&family=Playfair+Display:wght@600&family=Raleway:wght@600&family=Inter:wght@600&display=swap');
 
 body { 
     font-family: 'Poppins', sans-serif; 
@@ -21,7 +24,6 @@ body {
     display: flex;
     align-items: center;
 }
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Merriweather:wght@600&family=Playfair+Display:wght@600&family=Raleway:wght@600&family=Inter:wght@600&display=swap');
 
 .navbar a {
     text-decoration: none;
@@ -34,7 +36,6 @@ body {
 .navbar a:hover {
     color: #c7a3ff;
 }
-@import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Merriweather:wght@600&family=Playfair+Display:wght@600&family=Raleway:wght@600&family=Inter:wght@600&display=swap');
 
 h1, h2, h3 { 
     font-family: 'Varela Round', sans-serif;
@@ -64,7 +65,6 @@ button:hover {
     margin-top: 30px;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@800&family=Bebas+Neue&display=swap');
 .hero h1 {
     font-size: 100px; 
     font-weight: 800; 
