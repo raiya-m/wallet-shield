@@ -64,38 +64,53 @@ def detect_anomalies(values, field_name):
                 })
     return anomolies
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    logger.info("Received a request on /upload!")
-    if request.method == 'GET':
-        return jsonify({"message": "This endpoint is for file uploads via POST requests only."}), 200
+@app.route('/ai_analysis', methods=['POST'])
+def ai_analysis():
+    try:
+        logger.info("POST /ai_analysis called")
+        if 'file' not in request.files:
+            logger.warning("No file provided in request")
+            return jsonify({"error": "no file provided"}), 400
 
-    if request.method == 'POST':
+        file = request.files['file']
+        logger.info("Received file: %s", file.filename)
+
+        if file.filename.split('.')[-1].lower() != 'json':
+            logger.warning("Invalid file type: %s", file.filename)
+            return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
+
         try:
-            if 'file' not in request.files:
-                return jsonify({"error": "No file provided"}), 400
+            data = json.load(file)
+        except json.JSONDecodeError as e:
+            logger.error("Invalid JSON format: %s", e)
+            return jsonify({"error": "Invalid JSON format."}), 400
 
-            file = request.files['file']
-            
-            if file.filename.split('.')[-1].lower() != 'json':
-                logger.info("invalid")
-                return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
+        transactions = data.get("transactions", [])
+        logger.info("Transaction count: %d", len(transactions))
 
-            try:
-                data = json.load(file)  
-            except json.JSONDecodeError:
-                return jsonify({"error": "Failed to parse JSON. Ensure the file contains valid JSON data."}), 400
+        if not transactions:
+            logger.warning("No transactions found in uploaded JSON")
+            return jsonify({"error": "No transactions found in the file."}), 400
 
-            logger.info("Uploaded JSON data:", data)
+        gas_fees = [txn.get("gas_fee", 0) for txn in transactions]
+        amounts = [txn.get("amount", 0) for txn in transactions]
+        logger.debug("Gas fees: %s", gas_fees)
+        logger.debug("Amounts: %s", amounts)
 
-            return jsonify({
-                
-                "message": "File processed successfully!",
-                "received_data": data
-            }), 200
+        gas_fee_anomalies = detect_anomalies(gas_fees, "Gas Fee")
+        amount_anomalies = detect_anomalies(amounts, "Transaction Amount")
+        flagged_transactions = gas_fee_anomalies + amount_anomalies
+        logger.info("Flagged %d transactions", len(flagged_transactions))
 
-        except Exception as e:
-            return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({
+            "message": "AI Analysis Complete!",
+            "flagged_transactions": flagged_transactions
+        }), 200
+
+    except Exception as e:
+        logger.exception("Unexpected error during AI analysis")
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
