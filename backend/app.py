@@ -4,17 +4,32 @@ import logging
 import json
 import numpy as np
 from sklearn.ensemble import IsolationForest
-
+import os
+import requests
 from dotenv import load_dotenv
 load_dotenv()
 
-import os
+ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY")
+
+
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 app = Flask(__name__)
 CORS(app)
 
 
+
+import requests
+import os
+
+def fetch_transactions(wallet_address):
+    api_key = os.getenv("ETHERSCAN_API_KEY")
+    url = f"https://api.etherscan.io/api?module=account&action=txlist&address={wallet_address}&startblock=0&endblock=99999999&sort=asc&apikey={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return {"error": "Failed to fetch data"}
 
 @app.route('/ai_analysis', methods=['POST'])
 def ai_analysis():
