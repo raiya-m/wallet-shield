@@ -1,12 +1,19 @@
 from flask import Flask, request, jsonify, redirect, url_for
 from flask_cors import CORS
 import json
+import logging
 
 
 import numpy as np
 from sklearn.ensemble import IsolationForest
 app = Flask(__name__)
 CORS(app)  
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 @app.route('/ai_analysis', methods=['POST'])
 def ai_analysis():
