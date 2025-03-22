@@ -1,4 +1,3 @@
-// filepath: c:\Users\anush\OneDrive\Documents\GitHub\wallet-shield\wallet-shield\src\components\HeroSection.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles.css";
