@@ -39,7 +39,7 @@ const CryptoChatbot = () => {
   return (
     <div className="chatbot-container" style={{ transform: expanded ? 'scale(1)' : 'scale(0.85)' }}>
       <div className="chatbot-header" onClick={() => setExpanded(!expanded)}>
-        <h4>💬 Learn about Crypto</h4>
+        <h4>💬 Gemini-powered advice on avoiding scams, fees, and risky wallets -- ask me questions!</h4>
         <span>{expanded ? '−' : '+'}</span>
       </div>
 
