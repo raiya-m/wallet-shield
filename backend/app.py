@@ -1,11 +1,43 @@
 from flask import Flask, request, jsonify, redirect, url_for
 from flask_cors import CORS
 import json
+
+
 import numpy as np
 from sklearn.ensemble import IsolationForest
 app = Flask(__name__)
 CORS(app)  
-#test commit because issues
+
+@app.route('/ai_analysis', methods=['POST'])
+def ai_analysis():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "no file provided"}), 400
+        file = request.files['file']
+        if file.filename.split('.')[-1].lower() != 'json':
+            return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
+        try:
+            data = json.load(file)
+        except json.JSONDecodeError:
+            return jsonify({"error": "Invalid JSON format."}), 400
+        
+        transactions = data.get("transactions", [])
+        if not transactions:
+            return jsonify({"error": "No transactions found in the file."}), 400
+        
+        gas_fees = [txn.get("gas_fee", 0) for txn in transactions]
+        amounts = [txn.get("amount", 0) for txn in transactions]
+        timestamps = [txn.get("timestamp", "") for txn in transactions]
+
+        gas_fee_anomalies = detect_anomalies(gas_fees, "Gas Fee")
+        amount_anomalies = detect_anomalies(amounts, "Transaction Amount")
+        flagged_transactions = gas_fee_anomalies + amount_anomalies
+        return jsonify({
+            "message": "AI Analysis Complete!",
+            "flagged_transactions": flagged_transactions
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def detect_anomalies(values, field_name):
     anomolies = []
@@ -22,42 +54,6 @@ def detect_anomalies(values, field_name):
                     "reason": f"Anomalous {field_name}: {values[i]}"
                 })
     return anomolies
-
-@app.route('/ai_analysis', methods=['POST'])
-def ai_analysis():
-    try:
-        if 'file' not in request.files:
-            return jsonify({"error": "no file provided"}), 400
-        file = request.files['file']
-        if file.filename.split('.')[-1].lower() != 'json':
-            return jsonify({"error": "Invalid file type. Please upload a JSON file."}), 400
-        try:
-            data = json.load(file)
-        except json.JSONDecodeError:
-            return jsonify({"error": "Invalid JSON format."}), 400
-       
-        transactions = data.get("transactions", [])
-        if not transactions:
-            return jsonify({"error": "No transactions found in the file."}), 400
-       
-        gas_fees = [txn.get("gas_fee", 0) for txn in transactions]
-        amounts = [txn.get("amount", 0) for txn in transactions]
-        timestamps = [txn.get("timestamp", "") for txn in transactions]
-
-
-        gas_fee_anomalies = detect_anomalies(gas_fees, "Gas Fee")
-        amount_anomalies = detect_anomalies(amounts, "Transaction Amount")
-        flagged_transactions = gas_fee_anomalies + amount_anomalies
-        return jsonify({
-            "message": "AI Analysis Complete!",
-            "flagged_transactions": flagged_transactions
-        }), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-
-
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():

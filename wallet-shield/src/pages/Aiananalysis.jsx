@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
-function AIAnalysis() {
+const Aiananalysis = () => {
     const [transactions, setTransactions] = useState([]);
     const [message, setMessage] = useState('');
-
 
     useEffect(() => {
         axios.get('http://127.0.0.1:5000/ai_analysis')
@@ -17,7 +15,6 @@ function AIAnalysis() {
                 setMessage('Error fetching analysis results.');
             });
     }, []);
-
 
     return (
         <div className="ai-analysis">
@@ -39,5 +36,4 @@ function AIAnalysis() {
     );
 }
 
-
-export default AIAnalysis;
+export default Aiananalysis;

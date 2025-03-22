@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import GetStarted from "./pages/GetStarted";
 import "./styles.css";
+import Aiananalysis from "./pages/Aiananalysis";
+ 
 
 function App() {
   return (
@@ -12,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/getstarted" element={<GetStarted />} />
+        <Route path="/aianalysis" element={<Aiananalysis />} />
       </Routes>
     </>
   );
