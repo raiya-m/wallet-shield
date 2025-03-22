@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react';
 const Aiananalysis = () => {
     const location = useLocation();
     const { flagged_transactions = [], message = '' } = location.state || {};
+    const [chartData, setChartData] = useState(null);
+
     useEffect(() => {
         if (flagged_transactions.length > 0) {
             const labels = flagged_transactions.map((txn) => txn.transaction_id);
@@ -19,11 +21,32 @@ const Aiananalysis = () => {
                 return match ? parseFloat(match[1]) : 0;
             });
 
-           
+            setChartData({
+                labels,
+                datasets: [
+                    {
+                        label: 'Gas Fee',
+                        data: gasFeeData,
+                        backgroundColor: 'rgba(108, 92, 231, 0.5)',  // Soft purple color
+                        borderColor: 'rgba(108, 92, 231, 1)',  // Matching border
+                        borderWidth: 1,
+                        hoverBackgroundColor: 'rgba(108, 92, 231, 0.7)',
+                    },
+                    {
+                        label: 'Transaction Amount',
+                        data: transactionAmountData,
+                        backgroundColor: 'rgba(102, 51, 153, 0.5)',  // Lighter purple
+                        borderColor: 'rgba(102, 51, 153, 1)',
+                        borderWidth: 1,
+                        hoverBackgroundColor: 'rgba(102, 51, 153, 0.7)',
+                    }
+                ]
+            });
         }
     }, [flagged_transactions]);
+
     return (
-        <div className="ai-analysis" >
+        <div className="ai-analysis">
             <h1>AI Analysis Results</h1>
 
             {flagged_transactions.length > 0 ? (
@@ -52,7 +75,58 @@ const Aiananalysis = () => {
                             </tbody>
                         </table>
                     </div>
-                    
+
+                    {chartData && (
+                        <div style={{ marginTop: '30px', padding: '20px', borderRadius: '12px', backgroundColor: '#f3f3f8', boxShadow: '0px 4px 12px rgba(108, 92, 231, 0.2)' }}>
+                            <h2>Transaction Data Visualization</h2>
+                            <Bar
+                                data={chartData}
+                                options={{
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                fontFamily: 'Varela Round, sans-serif',
+                                                fontSize: 14,
+                                                fontColor: '#6c5ce7',
+                                            }
+                                        },
+                                        tooltip: {
+                                            backgroundColor: '#6c5ce7',
+                                            titleFontFamily: 'Poppins, sans-serif',
+                                            bodyFontFamily: 'Poppins, sans-serif',
+                                            bodyFontSize: 14,
+                                            bodyFontColor: '#fff',
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                color: 'rgba(108, 92, 231, 0.2)', // Light purple grid lines
+                                            },
+                                            ticks: {
+                                                fontFamily: 'Poppins, sans-serif',
+                                                fontSize: 14,
+                                                fontColor: '#6c5ce7',
+                                            },
+                                        },
+                                        x: {
+                                            ticks: {
+                                                fontFamily: 'Poppins, sans-serif',
+                                                fontSize: 14,
+                                                fontColor: '#6c5ce7',
+                                            },
+                                        }
+                                    },
+                                    layout: {
+                                        padding: 20
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
                 </>
             ) : (
                 <p>No flagged transactions.</p>

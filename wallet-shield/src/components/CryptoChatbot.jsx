@@ -6,12 +6,12 @@ const CryptoChatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [chatResponse, setChatResponse] = useState('');
 
   const backendUrl = "http://127.0.0.1:5000"; 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true while waiting for response
     try {
       const response = await fetch(`${backendUrl}/gemini_suggest`, {
         method: 'POST',
@@ -24,17 +24,16 @@ const CryptoChatbot = () => {
       }
 
       const data = await response.json();
-      setChatResponse(data.response);
       const botMessage = {
         text: data.response || 'Sorry, Gemini did not return an answer.',
         sender: 'bot',
       };
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]); // Add the response to messages state
     } catch (error) {
       console.error('Error:', error);
       setMessages((prev) => [...prev, { text: 'Error contacting Gemini.', sender: 'bot' }]);
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false once response is received
     }
   };
 
@@ -47,7 +46,6 @@ const CryptoChatbot = () => {
 
       {expanded && (
         <div className="chatbot-body">
-          {chatResponse && <div className="chat-response">{chatResponse}</div>}
           {messages.map((msg, i) => (
             <div key={i} className={`chat-message ${msg.sender}`}>
               {msg.text}
