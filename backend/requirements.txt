@@ -1,0 +1,6 @@
+Flask
+Flask-CORS
+numpy
+scikit-learn
+requests
+python-dotenv

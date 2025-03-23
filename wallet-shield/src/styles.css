@@ -7,7 +7,7 @@
 body { 
     font-family: 'Poppins', sans-serif; 
     background-color: #ffffff;
-    color:rgb(0, 0, 0);
+    color:rgb(103, 103, 103);
     text-align: center;
     margin: 0;
     padding: 0;
@@ -17,7 +17,7 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 25px 50px;
-    background: rgb(0, 0, 0);
+    background: rgb(139, 132, 132);
     border-bottom: 2px solid #ffffff;
 }
 
