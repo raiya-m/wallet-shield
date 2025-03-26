@@ -19,5 +19,5 @@ Blockchain: Web3.py, Solidity, Alchemy, MetaMask, RPC URL
 
 Frontend: React, Chart.JS, CSS, React-Chartjs-2
 
-Interactive Chatbot: Built on Gemini's API
+Interactive Chatbot: Built on Google Gemini's API
 
